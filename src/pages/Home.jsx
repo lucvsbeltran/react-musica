@@ -1,22 +1,26 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 function Home() {
-  const [artists, setArtists] = useState([]);
+  const [characters, setCharacters] = useState([]);
   const [query, setQuery] = useState("");
 
-  const searchArtist = async () => {
+  const searchCharacter = async () => {
     try {
-      const res = await axios.get(
-        `https://theaudiodb.com/api/v1/json/2/search.php?s=${query}`
-      );
-      setArtists(res.data.artists || []);
+      const res = await fetch(`https://rickandmortyapi.com/api/character/?name=${query}`);
+      const data = await res.json();
+      setCharacters(data.results || []);
     } catch (error) {
       console.error(error);
-      setArtists([]);
+      setCharacters([]);
     }
   };
+
+  useEffect(() => {
+    fetch("https://rickandmortyapi.com/api/character")
+      .then(res => res.json())
+      .then(data => setCharacters(data.results));
+  }, []);
 
   return (
     <div className="p-4">
@@ -29,22 +33,22 @@ function Home() {
           className="border px-2 rounded"
         />
         <button
-          onClick={searchArtist}
+          onClick={searchCharacter}
           className="bg-blue-600 text-white px-3 rounded"
         >
           Buscar
         </button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {artists.map((artist) => (
+        {characters.map((char) => (
           <Link
-            key={artist.idArtist}
-            to={`/artist/${artist.strArtist}`}
+            key={char.id}
+            to={`/artist/${char.id}`}
             className="border p-2 rounded hover:shadow"
           >
-            <img src={artist.strArtistThumb || "https://via.placeholder.com/150"} alt={artist.strArtist} />
-            <h2 className="font-bold">{artist.strArtist}</h2>
-            <p>{artist.strCountry}</p>
+            <img src={char.image} alt={char.name} />
+            <h2 className="font-bold">{char.name}</h2>
+            <p>{char.species}</p>
           </Link>
         ))}
       </div>
@@ -53,3 +57,4 @@ function Home() {
 }
 
 export default Home;
+

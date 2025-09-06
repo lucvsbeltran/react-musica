@@ -1,36 +1,55 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
 
 function Detail() {
   const { id } = useParams();
-  const [artist, setArtist] = useState(null);
+  const [character, setCharacter] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchArtist = async () => {
-      try {
-        const res = await axios.get(
-          `https://theaudiodb.com/api/v1/json/2/search.php?s=${id}`
-        );
-        setArtist(res.data.artists ? res.data.artists[0] : null);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchArtist();
+    fetch(`https://rickandmortyapi.com/api/character/${id}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Personaje no encontrado");
+        return res.json();
+      })
+      .then((data) => {
+        setCharacter(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
   }, [id]);
 
-  if (!artist) return <p className="p-4">Artista no encontrado.</p>;
+  if (loading) return <p>Cargando personaje...</p>;
+  if (error) return <p>Error: {error}</p>;
+  if (!character) return <p>No hay datos para este personaje.</p>;
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-2">{artist.strArtist}</h1>
-      <img src={artist.strArtistThumb} alt={artist.strArtist} className="mb-2" />
-      <p><strong>Género:</strong> {artist.strGenre}</p>
-      <p><strong>Formación:</strong> {artist.intBornYear}</p>
-      <p><strong>Biografía:</strong> {artist.strBiographyEN}</p>
+    <div className="p-6">
+      <Link to="/" className="text-blue-600 hover:underline mb-4 inline-block">
+        ← Volver
+      </Link>
+      <h1 className="text-3xl font-bold mb-4">{character.name}</h1>
+      <div className="flex flex-col md:flex-row gap-6">
+        <img
+          src={character.image}
+          alt={character.name}
+          className="w-full md:w-1/3 rounded"
+        />
+        <div className="flex-1">
+          <p><strong>Especie:</strong> {character.species}</p>
+          <p><strong>Estado:</strong> {character.status}</p>
+          <p><strong>Género:</strong> {character.gender}</p>
+          <p><strong>Origen:</strong> {character.origin.name}</p>
+          <p><strong>Ubicación:</strong> {character.location.name}</p>
+        </div>
+      </div>
     </div>
   );
 }
 
 export default Detail;
+
