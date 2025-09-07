@@ -6,7 +6,6 @@ class ErrorBoundary extends React.Component {
     this.state = { hasError: false };
   }
 
-  // Cambiamos 'error' por '_error' para que ESLint no marque warning
   static getDerivedStateFromError(_error) {
     return { hasError: true };
   }
@@ -17,11 +16,11 @@ class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
-      return <h2 className="text-red-600 p-4">Algo salió mal.</h2>;
+      return <h1>Algo salió mal 😢</h1>;
     }
+
     return this.props.children;
   }
 }
 
 export default ErrorBoundary;
-
