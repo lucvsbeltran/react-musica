@@ -6,6 +6,7 @@ class ErrorBoundary extends React.Component {
     this.state = { hasError: false };
   }
 
+  // eslint-disable-next-line no-unused-vars
   static getDerivedStateFromError(_error) {
     return { hasError: true };
   }
@@ -16,7 +17,22 @@ class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
-      return <h1>Algo salió mal 😢</h1>;
+      return (
+        <div style={{ textAlign: "center", marginTop: "50px" }}>
+          <h1>Algo salió mal 😢</h1>
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              padding: "10px 20px",
+              fontSize: "16px",
+              marginTop: "20px",
+              cursor: "pointer",
+            }}
+          >
+            Recargar página
+          </button>
+        </div>
+      );
     }
 
     return this.props.children;
